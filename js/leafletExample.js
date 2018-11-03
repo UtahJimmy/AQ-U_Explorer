@@ -173,7 +173,7 @@ function openTab(evt, tabName) {
     console.log(evt);
     if(tabName=='duststorm' & evt.altKey == true & evt.shiftKey==true){
 
-        var audio = new Audio('images/dustStorm/op1/SA.mp3');
+        var audio = new Audio('images/duststorm/op1/SA.mp3');
         audio.play();
     }
     var tablinks = document.getElementsByClassName("tab");
