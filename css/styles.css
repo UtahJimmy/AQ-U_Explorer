@@ -1,0 +1,34 @@
+#pageTitle p{
+    margin: auto;
+    font-size: 40pt;
+}
+#container {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    margin: auto;
+}
+
+#eventTabs{
+    margin-bottom: 12px;
+}
+
+#wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-items: left;
+}
+
+.button{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#map{
+    height: 450px;
+    width: 700px;
+    margin: 0 auto;
+    padding: 15px;
+}
