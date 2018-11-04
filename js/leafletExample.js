@@ -115,19 +115,19 @@ function mouseOverEvent(e){
 function clickEvent(e){
 
     var markerID = e.sourceTarget._path.id;
-
     var dot = document.getElementById(markerID);
 
-    var dotColor = dot.attributes.fill.value;
-    //var dot = d3.select('#'+markerID);
-    console.log("Dot color: " + dotColor);
+    // console.log(dot.getAttribute("class"));
+    // console.log("dot classname pre-click: ",dot.classList);
+    // console.log("dot: ",dot);
 
-    if(dotColor == clickOn){
-        dot.style.fill = clickOff;
-    } else {
-        dot.style.fill = clickOn
+    // toggle dot marker styling
+    if (dot.classList.contains('selected')){
+        dot.classList.remove('selected');
+    } else{
+        dot.classList.add('selected');
     }
-    // dot.style.fill='black';s
+
 }
 function mouseOutEvent(e){
 
