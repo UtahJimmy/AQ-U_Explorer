@@ -10,22 +10,32 @@ var minZoom = startZoom;
 var slcLocation = [40.700,-111.870];
 
 var markerRadius = 6;
-var circMarker1Options = {
+var purpleAirMarker = {
     radius:markerRadius,
     color:'#000000',
     weight:2,
     fill:true,
-    fillColor:'#ffffff',
+    fillColor:'#ff96fd',
     fillOpacity: 0.9,
     interactive:true
 };
 
-var circMarker2Options = {
+var airUMarker = {
     radius:markerRadius,
     color:'#000000',
     weight:2,
     fill:true,
-    fillColor:'#fea211',
+    fillColor:'#fe6e5e',
+    fillOpacity: 0.9,
+    interactive:true
+};
+
+var daqMarker = {
+    radius:markerRadius,
+    color:'#000000',
+    weight:2,
+    fill:true,
+    fillColor:'#fef39a',
     fillOpacity: 0.9,
     interactive:true
 };
@@ -153,11 +163,17 @@ function drawMap(id){
         var id  = sensor.ID;
         var type = sensor.type;
 
-        if(id.length > 5) {
-            markerList[id] = L.circleMarker ([lat,lng], circMarker1Options).addTo(mapDisplay)
+        console.log("sensor number: ", i);
+        console.log(type);
 
+        if(type == 'PMS5003\'' | type == 'PMS1003\'') {
+            markerList[id] = L.circleMarker ([lat,lng], purpleAirMarker).addTo(mapDisplay)
+
+        } else if(type == 'H1.1\'') {
+            markerList[id] = L.circleMarker ([lat,lng], airUMarker).addTo(mapDisplay);
         } else{
-            markerList[id] = L.circleMarker ([lat,lng], circMarker2Options).addTo(mapDisplay);
+            print
+            markerList[id] = L.circleMarker ([lat,lng], daqMarker).addTo(mapDisplay);
         }
 
         markerList[id].bindPopup("<b>monitor: </b>" + id);
