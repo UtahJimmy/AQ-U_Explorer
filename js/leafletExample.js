@@ -44,7 +44,11 @@ var clickOn = "#3e79d2";
 var clickOff = "#eeede9";
 
 var mapSettings = {
-    zoomControl:false
+    zoomControl:false,
+    dragging: false,
+    keyboard: false,
+    doubleClickZoom: false,
+    tap:false
 };
 
 /////////////////////////////////////
@@ -163,8 +167,8 @@ function drawMap(id){
         var id  = sensor.ID;
         var type = sensor.type;
 
-        console.log("sensor number: ", i);
-        console.log(type);
+        // console.log("sensor number: ", i);
+        // console.log(type);
 
         if(type == 'PMS5003\'' | type == 'PMS1003\'') {
             markerList[id] = L.circleMarker ([lat,lng], purpleAirMarker).addTo(mapDisplay)
