@@ -34,5 +34,5 @@
 }
 
 .selected {
-    fill: blue;
+    stroke: #fffbf9;
 }
