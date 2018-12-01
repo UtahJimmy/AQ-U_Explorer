@@ -1,0 +1,8 @@
+.btnContainer{
+    display: flex;
+    flex-direction: row;
+}
+
+img{
+    opacity: 0.7;
+}
