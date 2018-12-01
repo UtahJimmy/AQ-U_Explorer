@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>AQ&U Explorer</title>
     <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="css/range-slider.css">
     <link rel="stylesheet" type="text/css" href="css/bulma.css">
     <link rel="stylesheet" type="text/css" href="css/weather-icons-wind.css">
     <link rel="stylesheet" type="text/css" href="css/weather-icons.css">
@@ -19,6 +20,10 @@
 
     <!-- Load D3 -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
+
+
+    <!-- Jquery for range slider -->
+
 </head>
 <body>
 
@@ -30,14 +35,14 @@
         <div id="eventTabs" class="tabs is-centered is-medium is-boxed is-toggle is-fullwidth">
             <ul>
 
-                <li id="fireworks" class="tab is-active" onclick="openTab(event,'fireworks')">
+                <li id="fireworks" class="tab" onclick="openTab(event,'fireworks')">
                     <a>
                         <span class="icon is-medium"><i class="fas fa-bomb" aria-hidden="true"></i></span>
                         <span>Fireworks</span>
                     </a>
                 </li>
 
-                <li id="wildfire" class="tab" onclick="openTab(event,'wildfire')">
+                <li id="wildfire" class="tab is-active" onclick="openTab(event,'wildfire')">
                     <a>
                         <span class="icon is-medium"><i class="fas fa-fire" aria-hidden="true"></i></span>
                         <span>WildFire</span>
