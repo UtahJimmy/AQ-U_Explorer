@@ -10,6 +10,10 @@
     margin: auto;
 }
 
+.simulationSelection{
+    stroke:cyan;
+}
+
 #eventTabs{
     margin-bottom: 12px;
 }
@@ -21,6 +25,18 @@
     justify-items: center;
 }
 
+#playerContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+}
+#simOptions{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+}
 .button{
     margin-top: 10px;
     margin-bottom: 10px;
@@ -33,6 +49,29 @@
     padding: 15px;
 }
 
+.option active{
+    background-color: darkslategray; /* Green */
+    border: none;
+    color: white;
+    margin:5px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.option{
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    margin:5px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
 .selected {
     stroke: #fffbf9;
 }
