@@ -297,9 +297,6 @@ function tabNameOptions(tab){
 function addModelOptions(tabName){
 
 
-
-
-
     var options = tabNameOptions(tabName);
     var modelOptions = document.createElement('div');
     modelOptions.id = "modelOptions";
@@ -334,6 +331,7 @@ function addModelOptions(tabName){
     } // end for i
 }
 function highlightSensors(){
+
     var option=this.id;
     var sensorlist = getSensorList(option);
 
@@ -393,6 +391,11 @@ function getSensorList(option){
     } //end switch option
 
     return sensorList;
+}
+function addMinutes(date, minutes) {
+
+    //this returns a string only -- add "new Date (...) to return datetime object
+    return new Date(date.getTime() + minutes*60000);
 }
 function setOption(){
     //this.classList.toggle("active");
@@ -484,14 +487,13 @@ async function advanceSlider(){
     var sliderStart = parseInt(slider.value);
     var endVal = parseInt(slider.max);
 
-    var timestamp = document.getElementById("timestamp");
-
     for(i = sliderStart; i<=endVal; i++){
 
         if(IS_PLAYING){
 
             loadIMG(i);
-            timestamp.innerHTML = i;
+            updateTimestamp(i);
+
             slider.value = i;
 
             await sleep(REFRESH);
@@ -502,7 +504,37 @@ async function advanceSlider(){
     }// end for i
 
 }// end function advance Slider
+function updateTimestamp(step){
+    var timestamp = document.getElementById("timestamp");
 
+    var startTime = getStartTime(activeTab);
+
+    var newTime = addMinutes(startTime, step*10);
+
+
+    timestamp.innerHTML = newTime;//.substring(0,27) ;
+}
+function getStartTime(tab){
+    var time = new Date(2001,0,0);
+    switch(tab){
+        case 'fireworks':
+            time = new Date(2018,1,1);
+            break;
+        case 'wildfire':
+            time = new Date(2018,4,1);
+            break;
+        case 'inversion':
+            time = new Date(2018,2,1);
+            break;
+        case 'duststorm':
+            time = new Date(2018,3,1);
+            break;
+        default:
+            time=new Date(1984,7,28)
+    }//end switch tab
+
+    return time;
+}
 //==== Contours as Path elements
 function setContour(theMap, simulationRun,step) {
 
