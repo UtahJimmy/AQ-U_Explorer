@@ -10,7 +10,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 }
 
 // Constant Variables
-var FRAME_RATE = 5;
+var FRAME_RATE = 10;
 var REFRESH = 1000/FRAME_RATE;
 var IS_PLAYING = false;
 var SLIDER_MIN = 3;
@@ -81,7 +81,10 @@ var clickOn = "#3e79d2";
 var clickOff = "#eeede9";
 var condition ="";
 
+var start_filename = "img_contours/" + activeTab + "/image0003.png";
 
+//load new one
+var overlay = L.imageOverlay(start_filename,imgBounds,imgOverlayOptions);
 /////////////////////////////////////
 //
 //            STATEMENTS
@@ -99,6 +102,7 @@ paintMap(mapDisplay);
 var id = document.getElementsByClassName('is-active')[0].id;
 loadSensorPositions(id);
 
+//preloadImg();
 //add player controls to tab
 addPlayerControls();
 addModelOptions();
@@ -473,6 +477,8 @@ async function advanceSlider(){
     //console.log("endval",endVal);
 
 
+    //preloadImg();
+
     for(i = sliderStart; i<=endVal; i++){
 
         if(IS_PLAYING){
@@ -655,24 +661,28 @@ function readJSON(callback) {
 }//end function readJSON
 
 //==== Contours as PNGs
+function preloadImg() {
+    document.body.innerHTML += '<div id="secretDiv"></div>';
+
+    var sec = document.getElementById('secretDiv');
+    //var secretDiv = document.createElement('div');
+
+    for (i = 3; i < 50;){
+        var img = document.createElement('img');
+        var current_imgSuffix = pad(i, 4);
+        var current_filename = "img_contours/" + activeTab + "/image" + current_imgSuffix + ".png";
+
+        img.src = current_filename;
+
+        sec.appendChild(img);
+    }
+}
 function loadIMG(stepNumber){
 
-    var current_imgSuffix = pad(stepNumber,4);
-    //var next_imgSuffix = pad(stepNumber+1,4);
+    var new_imgSuffix = pad(stepNumber,4);
+    var new_filename = "img_contours/" + activeTab + "/image" + new_imgSuffix + ".png";
 
-    var current_filename = "img_contours/" + activeTab + "/image" + current_imgSuffix + ".png";
-    //var next_filename = "img_contours/" + activeTab + "/image" + next_imgSuffix + ".png";
-
-    //Remove old layer
-    document.getElementsByClassName('simulation').remove();
-
-    //add new one
-    var current = L.imageOverlay(current_filename,imgBounds,imgOverlayOptions);
-    current.addTo(mapDisplay);
-
-
-    // L.imageOverlay(current_filename,imgBounds,imgOverlayOptions);
-    //todo: pre-load image somehow.
+    overlay.setUrl(new_filename).addTo(mapDisplay);
 
 }// end loadIMG;
 
