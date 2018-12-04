@@ -47,7 +47,6 @@ var imgOverlayOptions ={
 var	imgBounds = [[40.810476,-112.001349],[40.598850,-111.713403]];
 
 
-
 var markerRadius = 6;
 var purpleAirMarker = {
     radius:markerRadius,
@@ -155,10 +154,9 @@ function loadSensorPositions(id){
 function csvJSON(csv){
 
     var lines=csv.split('\n');
-
     var result = [];
-
     var headers=lines[0].split(',');
+
     lines.splice(0, 1);
     lines.forEach(function(line) {
         var obj = {};
@@ -170,57 +168,45 @@ function csvJSON(csv){
     });
 
     return result; //JavaScript object
-    //return JSON.stringify(result); //JSON
 }
 function readTextFile(file) {
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
+    rawFile.onreadystatechange = function (){
+        if(rawFile.readyState === 4){
+            if(rawFile.status === 200 || rawFile.status == 0) {
                 var allText = rawFile.responseText;
                 //console.log(allText);
+            }// end if 200
+        }// end if 4
+    }// end statechange
 
-            }
-        }
-    }
     rawFile.send(null);
     return rawFile.responseText;
 }
 function mouseOverEvent(e){
 
-    var markerID = e.sourceTarget._path.id;
+    //var markerID = e.sourceTarget._path.id;
     this.openPopup();
-    //
-    //console.log("you hovered " + markerID);
-
 }
 function clickEvent(e){
 
     var markerID = e.sourceTarget._path.id;
     var dot = document.getElementById(markerID);
 
-    // console.log(dot.getAttribute("class"));
-    // console.log("dot classname pre-click: ",dot.classList);
-    // console.log("dot: ",dot);
-
     // toggle dot marker styling
     if (dot.classList.contains('selected')){
         dot.classList.remove('selected');
     } else{
         dot.classList.add('selected');
-    }
+    }// end if-else dot
 
 }
 function mouseOutEvent(e){
 
-    var markerID = e.sourceTarget._path.id;
+    //var markerID = e.sourceTarget._path.id;
     this.closePopup();
     //console.log("you hovered " + markerID);
-
 }
 
 
@@ -231,18 +217,7 @@ function addMap(id){
         x.innerHTML = "<div id='map'></div>";
 
     mapDisplay = L.map('map',mapSettings).setView(slcLocation,startZoom);
-
-    // // Add tile layer to map -- MapBox Streets tile layer
-    // L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    //     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    //     maxZoom: maxZoom,
-    //     minZoom: minZoom,
-    //     id: 'mapbox.streets',
-    //     accessToken:'pk.eyJ1IjoiamFtb29yZTg0IiwiYSI6ImNqbm0zeWo5ZTAwcDIzcXM4NjJ4czBuODUifQ.cJSLiKVi7lbGzE4RQTRNHA'
-    // }).addTo(mapDisplay);
-
     paintMap(mapDisplay);
-
     loadSensorPositions(id);
 
 } // end drawMap
@@ -266,6 +241,7 @@ function openTab(evt, tabName) {
 
     var tablinks = document.getElementsByClassName("tab");
 
+
     //de-activate old tab
     for (i = 0; i < 4; i++) {
         tablinks[i].className = tablinks[i].className.replace(" is-active", "");
@@ -278,8 +254,8 @@ function openTab(evt, tabName) {
     addMap(tabName);
     addPlayerControls();
     addModelOptions();
-}// end openTab
 
+}// end openTab
 function addModelOptions(){
 
     var options = ["one","two","three","four"];
@@ -289,6 +265,7 @@ function addModelOptions(){
     console.log(container);
 
     var modOpts = 4;
+
     for(i=1;i<=modOpts;i++){
 
         var button = document.createElement('input');
@@ -306,15 +283,12 @@ function addModelOptions(){
         }
         modelOptions.appendChild(button);
 
-
         //make label
         var label = document.createElement('label');
         label.for="Option "+i.toString();
         label.innerHTML=options[i-1];
         modelOptions.appendChild(label)
     } // end for i
-
-
 }
 function highlightSensors(){
     var option=this.id;
@@ -325,11 +299,7 @@ function highlightSensors(){
         //console.log("change: ", sensorlist[key]);
         var sensor = document.getElementById(sensorID);
         sensor.style.fill="#0FF";
-        console.log(sensor);
-        //sensor.className="simulationSelection";
-
-        //todo: change style for monitors in  list
-    }
+    }//end for key
 
 }
 function unstyleSensors(){
@@ -340,14 +310,9 @@ function unstyleSensors(){
     for(key in sensorlist){
         var sensorID = sensorlist[key];
         var fillColor = getFillColor(sensorID);
-        //console.log("change: ", sensorlist[key]);
         var sensor = document.getElementById(sensorID);
         sensor.style.fill=fillColor;
-        console.log(sensor);
-        //sensor.className="simulationSelection";
-
-        //todo: change style for monitors in  list
-    }
+    } // end for key
     //todo: remove style
 }
 function getFillColor(ID){
@@ -474,26 +439,11 @@ async function advanceSlider(){
 
     var timestamp = document.getElementById("timestamp");
 
-    //console.log("endval",endVal);
-
-
-    //preloadImg();
-
     for(i = sliderStart; i<=endVal; i++){
 
         if(IS_PLAYING){
 
-            //var filename = "img_contours/" + activeTab + "/image" + pad(i,4) + ".png";
-            //var image = L.imageOverlay(filename,imgBounds,imgOverlayOptions);
-
-            // if (mapDisplay.hasLayer(image)) {
-            //          mapDisplay.removeLayer(image);
-            // }
-            //
-
-            //loadpaths(activeTab,condition,i);
             loadIMG(i);
-
             timestamp.innerHTML = i;
             slider.value = i;
 
@@ -661,22 +611,6 @@ function readJSON(callback) {
 }//end function readJSON
 
 //==== Contours as PNGs
-function preloadImg() {
-    document.body.innerHTML += '<div id="secretDiv"></div>';
-
-    var sec = document.getElementById('secretDiv');
-    //var secretDiv = document.createElement('div');
-
-    for (i = 3; i < 50;){
-        var img = document.createElement('img');
-        var current_imgSuffix = pad(i, 4);
-        var current_filename = "img_contours/" + activeTab + "/image" + current_imgSuffix + ".png";
-
-        img.src = current_filename;
-
-        sec.appendChild(img);
-    }
-}
 function loadIMG(stepNumber){
 
     var new_imgSuffix = pad(stepNumber,4);
@@ -685,7 +619,6 @@ function loadIMG(stepNumber){
     overlay.setUrl(new_filename).addTo(mapDisplay);
 
 }// end loadIMG;
-
 
 //====utilities
 async function sleep(ms) {
