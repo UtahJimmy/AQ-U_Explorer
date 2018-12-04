@@ -88,6 +88,7 @@ var condition ="";
 //
 /////////////////////////////////////
 
+
 //Make map container
 var container = document.getElementById('wrapper');
 container.innerHTML = "<div id='map'></div>";
@@ -97,7 +98,6 @@ paintMap(mapDisplay);
 //Load sensor positions
 var id = document.getElementsByClassName('is-active')[0].id;
 loadSensorPositions(id);
-
 
 //add player controls to tab
 addPlayerControls();
@@ -278,6 +278,7 @@ function openTab(evt, tabName) {
 
 function addModelOptions(){
 
+    var options = ["one","two","three","four"];
     var modelOptions = document.createElement('div');
     modelOptions.id = "modelOptions";
     container.appendChild(modelOptions);
@@ -285,14 +286,28 @@ function addModelOptions(){
 
     var modOpts = 4;
     for(i=1;i<=modOpts;i++){
-        var button = document.createElement('button');
+
+        var button = document.createElement('input');
         button.id='option'+i.toString();
         button.className = "option";
-        button.innerHTML = "Option "+i.toString();
+        button.value = "Option "+i.toString();
+        button.type="radio";
+        button.name="modelOption";
         button.onclick = setOption;
         button.onmouseover = highlightSensors;
         button.onmouseleave = unstyleSensors;
+        //assign first element as checked
+        if(i==1){
+            button.checked="checked";
+        }
         modelOptions.appendChild(button);
+
+
+        //make label
+        var label = document.createElement('label');
+        label.for="Option "+i.toString();
+        label.innerHTML=options[i-1];
+        modelOptions.appendChild(label)
     } // end for i
 
 
@@ -368,8 +383,9 @@ function getSensorList(option){
     return sensorList;
 }
 function setOption(){
-    this.classList.toggle("active");
-    console.log(this.classList)
+    //this.classList.toggle("active");
+    console.log(this.value)
+
 }
 function addPlayerControls(){
     activeTab = document.getElementsByClassName("is-active")[0].id;
@@ -455,6 +471,7 @@ async function advanceSlider(){
     var timestamp = document.getElementById("timestamp");
 
     //console.log("endval",endVal);
+
 
     for(i = sliderStart; i<=endVal; i++){
 
@@ -638,7 +655,7 @@ function readJSON(callback) {
 }//end function readJSON
 
 //==== Contours as PNGs
-async function loadIMG(stepNumber){
+function loadIMG(stepNumber){
 
     var current_imgSuffix = pad(stepNumber,4);
     //var next_imgSuffix = pad(stepNumber+1,4);
@@ -653,6 +670,8 @@ async function loadIMG(stepNumber){
     var current = L.imageOverlay(current_filename,imgBounds,imgOverlayOptions);
     current.addTo(mapDisplay);
 
+
+    // L.imageOverlay(current_filename,imgBounds,imgOverlayOptions);
     //todo: pre-load image somehow.
 
 }// end loadIMG;
