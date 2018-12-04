@@ -9,6 +9,13 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
     }
 }
 
+var groupBy = function(xs, key) {
+    return xs.reduce(function(rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
+};
+
 // Constant Variables
 var FRAME_RATE = 6;
 var REFRESH = 1000/FRAME_RATE;
@@ -90,6 +97,15 @@ var overlay = L.imageOverlay(start_filename,imgBounds,imgOverlayOptions);
 //
 /////////////////////////////////////
 
+//load sensor list
+var sensor_list_fp = "data/sensor_list.csv";
+var sensor_selection_fp = "data/sensor_select.csv";
+var sensorList = readTextFile(sensor_list_fp)
+var sensorList_json = csvJSON(sensorList);
+
+
+var sensorSelect = readTextFile(sensor_selection_fp);
+var sensorSelect_json = csvJSON(sensorSelect);
 
 //Make map container
 var container = document.getElementById('wrapper');
@@ -104,7 +120,7 @@ loadSensorPositions(id);
 //preloadImg();
 //add player controls to tab
 addPlayerControls();
-addModelOptions();
+addModelOptions("wildfire");
 
 
 /////////////////////////////////////
@@ -151,6 +167,7 @@ function loadSensorPositions(id){
     });
 
 } // end function loadSensorPositions(id)
+
 function csvJSON(csv){
 
     var lines=csv.split('\n');
@@ -253,40 +270,66 @@ function openTab(evt, tabName) {
 
     addMap(tabName);
     addPlayerControls();
-    addModelOptions();
+    addModelOptions(tabName);
 
 }// end openTab
-function addModelOptions(){
+function tabNameOptions(tab){
+    var opts = [];
+    switch(tab){
+        case "wildfire":
+            opts = ["w1","w2","w3"];
+            break;
+        case "fireworks":
+            opts = ["f1","f2","f3","f4","f5"];
+            break;
+        case "duststorm":
+            opts = ["d1","d2"];
+            break;
+        case "inversion":
+            opts = ["i1","i2","i3"];
+            break;
+        default:
+            opts=['def1','def2'];
+            break;
+    }//end switch(tab)
+    return opts;
+}
+function addModelOptions(tabName){
 
-    var options = ["one","two","three","four"];
+
+
+
+
+    var options = tabNameOptions(tabName);
     var modelOptions = document.createElement('div');
     modelOptions.id = "modelOptions";
     container.appendChild(modelOptions);
     console.log(container);
 
-    var modOpts = 4;
 
-    for(i=1;i<=modOpts;i++){
+    for(i=0;i<options.length;i++){
 
         var button = document.createElement('input');
         button.id='option'+i.toString();
         button.className = "option";
-        button.value = "Option "+i.toString();
+        button.value = options[i];
         button.type="radio";
         button.name="modelOption";
         button.onclick = setOption;
         button.onmouseover = highlightSensors;
         button.onmouseleave = unstyleSensors;
+
         //assign first element as checked
-        if(i==1){
+        if(i==0){
             button.checked="checked";
         }
+
         modelOptions.appendChild(button);
 
         //make label
         var label = document.createElement('label');
-        label.for="Option "+i.toString();
-        label.innerHTML=options[i-1];
+        label.for=options[i];
+        label.innerHTML=options[i];
         modelOptions.appendChild(label)
     } // end for i
 }
@@ -353,12 +396,14 @@ function getSensorList(option){
 }
 function setOption(){
     //this.classList.toggle("active");
-    console.log(this.value)
+    console.log(this.value);
+    condition = this.value;
 
 }
 function addPlayerControls(){
+
+
     activeTab = document.getElementsByClassName("is-active")[0].id;
-    condition = "op1";
 
     var playerContainer = document.createElement('div');
     playerContainer.id = 'playerContainer';
@@ -374,6 +419,7 @@ function addPlayerControls(){
     input.value="0";
 
     playerContainer.appendChild(input);
+
 
     //Add Button container
     var btnContainer = document.createElement('div');
@@ -416,6 +462,7 @@ function addPlayerControls(){
     });
 
     //Add readout text
+    //todo: convert frame number to timestamp
     var timestamp = document.createElement("div");
     timestamp.id="timestamp";
     container.appendChild(timestamp);
