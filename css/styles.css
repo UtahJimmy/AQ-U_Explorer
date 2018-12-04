@@ -42,6 +42,10 @@
     margin-bottom: 10px;
 }
 
+#slider{
+    width: 300px;
+}
+
 #map{
     height: 450px;
     width: 700px;
