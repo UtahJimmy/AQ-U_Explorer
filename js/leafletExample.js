@@ -10,7 +10,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 }
 
 // Constant Variables
-var FRAME_RATE = 6;
+var FRAME_RATE = 2;
 var REFRESH = 1000/FRAME_RATE;
 var IS_PLAYING = false;
 var SLIDER_MIN = 3;
@@ -562,8 +562,8 @@ async function advanceSlider(){
         if(IS_PLAYING){
 
             loadIMG(i,activeTab,option);
-            var t1 = performance.now();
-            console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
+
+
             updateTimestamp(i);
 
             slider.value = i;
@@ -572,7 +572,8 @@ async function advanceSlider(){
         } else{
             break;
         } //end if/else IS_PLAYING
-
+        var t1 = performance.now();
+        console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
     }// end for i
 
 }// end function advance Slider
