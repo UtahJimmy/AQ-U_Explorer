@@ -378,7 +378,6 @@ function getFillColor(ID){
 // function getSensorList(option){
 //     var sensorList = [];
 //
-//     //todo: make arrays for sensor IDs in each option
 //     switch(option){
 //         case 'option1':
 //             sensorList = ["6062'"];
@@ -430,7 +429,7 @@ function styleMonitors(monitors){
 function setOption(){
 
     resetPlayer();
-    mapDisplay.removeLayer(overlay);
+    //mapDisplay.removeLayer(overlay);
     //slider.value=SLIDER_MIN;
     option = this.value;
     // Load option file
@@ -522,7 +521,7 @@ function addPlayerControls(){
     resetBtn.addEventListener("click",function(){
         resetPlayer();
         //console.log("reset");
-        loadIMG(SLIDER_MIN);
+        //loadIMG(SLIDER_MIN); --> //todo: remove this for showing first frame on reset
     });
 
     //Add readout text
@@ -544,8 +543,8 @@ function resetPlayer(){
     //Reset timestamp to beginning
     timestamp.innerHTML= getStartTime(activeTab);
 
-    //remove overlay
     mapDisplay.removeLayer(overlay);
+
 }
 
 async function advanceSlider(){
@@ -603,158 +602,158 @@ function getStartTime(tab){
     return time;
 }
 //==== Contours as Path elements
-function setContour(theMap, simulationRun,step) {
-
-        let k = 0;
-        let contour = simulationRun[step];
-
-        var contours = [];
-
-        for (var key in contour) {
-            if (contour.hasOwnProperty(key)) {
-                // console.log(key, allContours[key]);
-                var theContour = contour[key];
-                var aContour = theContour.path;
-                aContour.level = theContour.level;
-                aContour.k = theContour.k;
-
-                contours.push(aContour);
-            }// end if
-        }//end for
-
-        contours.sort(function (a, b) {
-            return b.level - a.level;
-        });
-
-        // var levelColours = ['#a6d96a', '#ffffbf', '#fdae61', '#d7191c', '#bd0026', '#a63603'];
-        var levelColours = ['#31a354', '#a1d99b', '#e5f5e0', '#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026'];
-        var defaultContourColor = 'black';
-        var defaultContourWidth = 1;
-
-        var mapSVG = d3.select("#map").select("svg.leaflet-zoom-animated");
-        var g = mapSVG.select("g");  //.attr("class", "leaflet-zoom-hide").attr('opacity', 0.8);
-
-        // var contourPath = g.selectAll("path")
-        //         .data(contours)
-        //       .enter().append("path")
-        //       .style("fill", function(d, i) { return levelColours[d.level];})
-        //       .style("stroke", defaultContourColor)
-        //       .style('stroke-width', defaultContourWidth)
-        //       .style('opacity', 1)
-        //       .on('mouseover', function(d) {
-        //           d3.select(this).style('stroke', 'black');
-        //       })
-        //       .on('mouseout', function(d) {
-        //           d3.select(this).style('stroke', defaultContourColor);
-        //       });
-
-        var contourPath = g.selectAll("path")
-            .data(contours, function (d) {
-                return d;
-            });
-
-        contourPath.style("fill", function (d, i) {
-            return levelColours[d.level];
-        })
-        // .style("stroke", defaultContourColor)
-        // .style('stroke-width', defaultContourWidth)
-            .style('opacity', 1)
-            .on('mouseover', function (d) {
-                d3.select(this).style('stroke', 'black');
-            })
-            .on('mouseout', function (d) {
-                d3.select(this).style('stroke', defaultContourColor);
-            });
-
-        var contourEnter = contourPath.enter().append("path")
-        // .merge(contourPath)
-        //   .attr("d", function(d) {
-        //     var pathStr = d.map(function(d1) {
-        //       var point = theMap.latLngToLayerPoint(new L.LatLng(d1[1], d1[2]));
-        //       return d1[0] + point.x + "," + point.y;
-        //     }).join('');
-        //     return pathStr;
-        //   })
-            .style("fill", function (d, i) {
-                return levelColours[d.level];
-            })
-            // .style("stroke", defaultContourColor)
-            // .style('stroke-width', defaultContourWidth)
-            .style('opacity', 0.6)
-            .on('mouseover', function (d) {
-                d3.select(this).style('stroke', 'black');
-            })
-            .on('mouseout', function (d) {
-                d3.select(this).style('stroke', defaultContourColor);
-            });
-
-        contourPath.exit().remove();
-
-        function resetView() {
-            //console.log('reset:', mapDisplay.options.center);
-            contourEnter.attr("d", function (d) {
-                var pathStr = d.map(function (d1) {
-                    var point = mapDisplay.latLngToLayerPoint(new L.LatLng(d1[2], d1[1]));
-                    return d1[0] + point.x + "," + point.y;
-                }).join('');
-
-                //console.log('d', d);
-
-                return pathStr;
-            });
-        }//end function reset view
-
-        theMap.on("viewreset", resetView);
-        //theMap.on("zoom", resetView);
-
-        resetView();
-
-}//end function set contour
-function updateContour(tab,condition) {
-   // console.log('updating the contours');
-
-    //todo: choose  the contour set based on active tab and condition
-
-    loadpaths(tab,condition);
-    // getDataFromDB(lastContourURL).then(data => {
-    //
-    //     console.log(data);
-    // // process contours data
-    // setContour(slcMap, data);
-    //
-    // }).catch(function(err){
-    //     // alert("error, request failed!");
-    //     console.log("Error when updating the contour: ", err)
-    // });
-}
-function loadpaths(folder,option,step){
-    //console.log("loading paths...");
-
-    //addAnimationControls(folder);
-    readJSON(function(response) {
-        // Parsing JSON string into object
-        var actual_JSON = JSON.parse(response);
-        //console.log("made it through!");
-        //console.log("Returned Contours: ",actual_JSON);
-        setContour(mapDisplay, actual_JSON,step);
-    });
-
-}//end loadpaths
-function readJSON(callback) {
-
-    var filepath = "paths/ExampleContour.json";
-
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', filepath, true); // Replace 'appDataServices' with the path to your file
-    xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4 && xobj.status == "200") {
-            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-            callback(xobj.responseText);
-        }
-    };
-    xobj.send(null);
-}//end function readJSON
+// function setContour(theMap, simulationRun,step) {
+//
+//         let k = 0;
+//         let contour = simulationRun[step];
+//
+//         var contours = [];
+//
+//         for (var key in contour) {
+//             if (contour.hasOwnProperty(key)) {
+//                 // console.log(key, allContours[key]);
+//                 var theContour = contour[key];
+//                 var aContour = theContour.path;
+//                 aContour.level = theContour.level;
+//                 aContour.k = theContour.k;
+//
+//                 contours.push(aContour);
+//             }// end if
+//         }//end for
+//
+//         contours.sort(function (a, b) {
+//             return b.level - a.level;
+//         });
+//
+//         // var levelColours = ['#a6d96a', '#ffffbf', '#fdae61', '#d7191c', '#bd0026', '#a63603'];
+//         var levelColours = ['#31a354', '#a1d99b', '#e5f5e0', '#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026'];
+//         var defaultContourColor = 'black';
+//         var defaultContourWidth = 1;
+//
+//         var mapSVG = d3.select("#map").select("svg.leaflet-zoom-animated");
+//         var g = mapSVG.select("g");  //.attr("class", "leaflet-zoom-hide").attr('opacity', 0.8);
+//
+//         // var contourPath = g.selectAll("path")
+//         //         .data(contours)
+//         //       .enter().append("path")
+//         //       .style("fill", function(d, i) { return levelColours[d.level];})
+//         //       .style("stroke", defaultContourColor)
+//         //       .style('stroke-width', defaultContourWidth)
+//         //       .style('opacity', 1)
+//         //       .on('mouseover', function(d) {
+//         //           d3.select(this).style('stroke', 'black');
+//         //       })
+//         //       .on('mouseout', function(d) {
+//         //           d3.select(this).style('stroke', defaultContourColor);
+//         //       });
+//
+//         var contourPath = g.selectAll("path")
+//             .data(contours, function (d) {
+//                 return d;
+//             });
+//
+//         contourPath.style("fill", function (d, i) {
+//             return levelColours[d.level];
+//         })
+//         // .style("stroke", defaultContourColor)
+//         // .style('stroke-width', defaultContourWidth)
+//             .style('opacity', 1)
+//             .on('mouseover', function (d) {
+//                 d3.select(this).style('stroke', 'black');
+//             })
+//             .on('mouseout', function (d) {
+//                 d3.select(this).style('stroke', defaultContourColor);
+//             });
+//
+//         var contourEnter = contourPath.enter().append("path")
+//         // .merge(contourPath)
+//         //   .attr("d", function(d) {
+//         //     var pathStr = d.map(function(d1) {
+//         //       var point = theMap.latLngToLayerPoint(new L.LatLng(d1[1], d1[2]));
+//         //       return d1[0] + point.x + "," + point.y;
+//         //     }).join('');
+//         //     return pathStr;
+//         //   })
+//             .style("fill", function (d, i) {
+//                 return levelColours[d.level];
+//             })
+//             // .style("stroke", defaultContourColor)
+//             // .style('stroke-width', defaultContourWidth)
+//             .style('opacity', 0.6)
+//             .on('mouseover', function (d) {
+//                 d3.select(this).style('stroke', 'black');
+//             })
+//             .on('mouseout', function (d) {
+//                 d3.select(this).style('stroke', defaultContourColor);
+//             });
+//
+//         contourPath.exit().remove();
+//
+//         function resetView() {
+//             //console.log('reset:', mapDisplay.options.center);
+//             contourEnter.attr("d", function (d) {
+//                 var pathStr = d.map(function (d1) {
+//                     var point = mapDisplay.latLngToLayerPoint(new L.LatLng(d1[2], d1[1]));
+//                     return d1[0] + point.x + "," + point.y;
+//                 }).join('');
+//
+//                 //console.log('d', d);
+//
+//                 return pathStr;
+//             });
+//         }//end function reset view
+//
+//         theMap.on("viewreset", resetView);
+//         //theMap.on("zoom", resetView);
+//
+//         resetView();
+//
+// }//end function set contour
+// function updateContour(tab,condition) {
+//    // console.log('updating the contours');
+//
+//     //todo: choose  the contour set based on active tab and condition
+//
+//     loadpaths(tab,condition);
+//     // getDataFromDB(lastContourURL).then(data => {
+//     //
+//     //     console.log(data);
+//     // // process contours data
+//     // setContour(slcMap, data);
+//     //
+//     // }).catch(function(err){
+//     //     // alert("error, request failed!");
+//     //     console.log("Error when updating the contour: ", err)
+//     // });
+// }
+// function loadpaths(folder,option,step){
+//     //console.log("loading paths...");
+//
+//     //addAnimationControls(folder);
+//     readJSON(function(response) {
+//         // Parsing JSON string into object
+//         var actual_JSON = JSON.parse(response);
+//         //console.log("made it through!");
+//         //console.log("Returned Contours: ",actual_JSON);
+//         setContour(mapDisplay, actual_JSON,step);
+//     });
+//
+// }//end loadpaths
+// function readJSON(callback) {
+//
+//     var filepath = "paths/ExampleContour.json";
+//
+//     var xobj = new XMLHttpRequest();
+//     xobj.overrideMimeType("application/json");
+//     xobj.open('GET', filepath, true); // Replace 'appDataServices' with the path to your file
+//     xobj.onreadystatechange = function () {
+//         if (xobj.readyState == 4 && xobj.status == "200") {
+//             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+//             callback(xobj.responseText);
+//         }
+//     };
+//     xobj.send(null);
+// }//end function readJSON
 
 //==== Contours as PNGs
 function loadIMG(stepNumber){
