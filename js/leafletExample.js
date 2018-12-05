@@ -15,7 +15,7 @@ var REFRESH = 1000/FRAME_RATE;
 var IS_PLAYING = false;
 var SLIDER_MIN = 3;
 var SPLASHPAGE = "fireworks";
-
+var STEP = 3;
 /////////////////////////////////////
 //
 //            VARIABLES
@@ -480,8 +480,16 @@ function addPlayerControls(){
     input.type="range";
     input.step='1';
     input.value="0";
-
     playerContainer.appendChild(input);
+
+
+    document.querySelector('input').addEventListener('input',(evt)=>{
+        STEP = evt.target.value;
+        updateTimestamp(STEP);
+
+        console.log('changed',STEP);
+    })
+    //input.onChange = sliderTest;
 
 
     //Add Button container
@@ -531,6 +539,7 @@ function addPlayerControls(){
     container.appendChild(timestamp);
 
 }
+
 function resetPlayer(){
     //console.log("Clicked 'RESET'");
 
@@ -553,16 +562,37 @@ async function advanceSlider(){
     var sliderStart = parseInt(slider.value);
     var endVal = parseInt(slider.max);
 
-    for(i = sliderStart; i<=endVal; i++){
+    // for(i = STEP; i<=endVal; i++){
+    //     //var t0 = performance.now();
+    //
+    //     if(IS_PLAYING){
+    //
+    //         loadIMG(i,activeTab,option);
+    //
+    //         updateTimestamp(i);
+    //
+    //         slider.value = i;
+    //
+    //         await sleep(REFRESH);
+    //         //setDelay();
+    //     } else{
+    //         break;
+    //     } //end if/else IS_PLAYING
+    //     //var t1 = performance.now();
+    //     //console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+    // }// end for i
+
+
+    for(STEP; STEP<=endVal; STEP++){
         //var t0 = performance.now();
 
         if(IS_PLAYING){
 
-            loadIMG(i,activeTab,option);
+            loadIMG(STEP,activeTab,option);
 
-            updateTimestamp(i);
+            updateTimestamp(STEP);
 
-            slider.value = i;
+            slider.value = STEP;
 
             await sleep(REFRESH);
             //setDelay();
@@ -767,20 +797,27 @@ function getStartTime(tab){
 //==== Contours as PNGs
 function loadIMG(stepNumber,tab,option){
 
-
-
-
     var new_imgSuffix = pad(stepNumber,4);
     var new_filename = "img_contours/" + tab + "/" + option +"/image" + new_imgSuffix + ".png";
 
 
+    //overlay.setUrl(new_filename).addTo(mapDisplay);
+
+
+    // **** Alex's Link
+    //https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data#A_more_complex_example
+
     fetch(new_filename).then(function(response) {
+
         return response.blob();
+
     }).then(function(blob) {
+
         // Convert the blob to an object URL — this is basically an temporary internal URL
         // that points to an object stored inside the browser
         var objectURL = URL.createObjectURL(blob);
-        // invoke showProduct
+
+        // put image on map
         overlay.setUrl(objectURL).addTo(mapDisplay);
     });
 
