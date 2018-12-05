@@ -9,18 +9,12 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
     }
 }
 
-var groupBy = function(xs, key) {
-    return xs.reduce(function(rv, x) {
-        (rv[x[key]] = rv[x[key]] || []).push(x);
-        return rv;
-    }, {});
-};
-
 // Constant Variables
 var FRAME_RATE = 6;
 var REFRESH = 1000/FRAME_RATE;
 var IS_PLAYING = false;
 var SLIDER_MIN = 3;
+var SPLASHPAGE = "fireworks";
 
 /////////////////////////////////////
 //
@@ -83,9 +77,8 @@ var daqMarker = {
     interactive:true
 };
 
-var clickOn = "#3e79d2";
-var clickOff = "#eeede9";
-var condition ="";
+
+var option ="option1";
 
 var start_filename = "img_contours/" + activeTab + "/image0003.png";
 
@@ -97,31 +90,34 @@ var overlay = L.imageOverlay(start_filename,imgBounds,imgOverlayOptions);
 //
 /////////////////////////////////////
 
-//load sensor list
-var sensor_list_fp = "data/sensor_list.csv";
-var sensor_selection_fp = "data/sensor_select.csv";
-var sensorList = readTextFile(sensor_list_fp)
-var sensorList_json = csvJSON(sensorList);
-
-
-var sensorSelect = readTextFile(sensor_selection_fp);
-var sensorSelect_json = csvJSON(sensorSelect);
 
 //Make map container
 var container = document.getElementById('wrapper');
 container.innerHTML = "<div id='map'></div>";
 var mapDisplay = L.map('map',mapSettings).setView(slcLocation,startZoom);
-paintMap(mapDisplay);
+
+
+//load sensor list
+var sensor_list_fp = "data/sensor_list.csv";
+var sensorList = readTextFile(sensor_list_fp);
+var sensorList_json = csvJSON(sensorList);
+
 
 //Load sensor positions
 var id = document.getElementsByClassName('is-active')[0].id;
 loadSensorPositions(id);
 
-//preloadImg();
-//add player controls to tab
-addPlayerControls();
-addModelOptions("wildfire");
 
+//fill tab
+paintMap(mapDisplay);
+addPlayerControls();
+addModelOptions(SPLASHPAGE);
+timestamp.innerHTML= getStartTime(activeTab);
+
+
+//style monitors
+var selected_monitors = loadOptionFile(option);
+styleMonitors(selected_monitors);
 
 /////////////////////////////////////
 //
@@ -130,6 +126,7 @@ addModelOptions("wildfire");
 /////////////////////////////////////
 
 //==== Sensor placement functions
+
 function loadSensorPositions(id){
 
     var sensorFilePath = "data/" + id +"Sensors.csv";
@@ -144,9 +141,6 @@ function loadSensorPositions(id){
         var lng = parseFloat(sensor.long);
         var id  = sensor.ID;
         var type = sensor.type;
-
-        // console.log("sensor number: ", i);
-        // console.log(type);
 
         if(type == 'PMS5003\'' | type == 'PMS1003\'') {
             markerList[id] = L.circleMarker ([lat,lng], purpleAirMarker).addTo(mapDisplay)
@@ -167,7 +161,6 @@ function loadSensorPositions(id){
     });
 
 } // end function loadSensorPositions(id)
-
 function csvJSON(csv){
 
     var lines=csv.split('\n');
@@ -226,7 +219,6 @@ function mouseOutEvent(e){
     //console.log("you hovered " + markerID);
 }
 
-
 //==== Tab content Functions
 function addMap(id){
 
@@ -250,13 +242,14 @@ function paintMap(map){
 }
 function openTab(evt, tabName) {
 
+    var tablinks = document.getElementsByClassName("tab");
+
+
     if(tabName=='duststorm' & evt.altKey == true & evt.shiftKey==true){
 
         var audio = new Audio('images/duststorm/op1/SA.mp3');
         audio.play();
     }
-
-    var tablinks = document.getElementsByClassName("tab");
 
 
     //de-activate old tab
@@ -271,50 +264,63 @@ function openTab(evt, tabName) {
     addMap(tabName);
     addPlayerControls();
     addModelOptions(tabName);
+    timestamp.innerHTML= getStartTime(activeTab);
 
 }// end openTab
-function tabNameOptions(tab){
-    var opts = [];
+function getSimulationOptions(tab){
+
+    // // // //
+    //
+    //  This switch statement lets you define per-event style simulation parameters, but
+    //  it looks like we're going with uniform sensor selections for every tab.
+    //
+    // // // //
+
+    var opts = ["option1", "option2", "option3", "option4", "option5"];
+
     switch(tab){
         case "wildfire":
-            opts = ["w1","w2","w3"];
+            //opts = ["w1","w2","w3"];
             break;
         case "fireworks":
-            opts = ["f1","f2","f3","f4","f5"];
+            //opts = ["f1","f2","f3","f4","f5"];
             break;
         case "duststorm":
-            opts = ["d1","d2"];
+            //opts = ["d1","d2"];
             break;
         case "inversion":
-            opts = ["i1","i2","i3"];
+            //opts = ["i1","i2","i3"];
             break;
         default:
-            opts=['def1','def2'];
+            //opts=['def1','def2'];
             break;
     }//end switch(tab)
+
     return opts;
 }
 function addModelOptions(tabName){
 
 
-    var options = tabNameOptions(tabName);
+    //create model options HTML element
     var modelOptions = document.createElement('div');
     modelOptions.id = "modelOptions";
     container.appendChild(modelOptions);
-    console.log(container);
+
+    //get option types
+    var options = getSimulationOptions(tabName);
 
 
+    //add options types to tab
     for(i=0;i<options.length;i++){
-
         var button = document.createElement('input');
-        button.id='option'+i.toString();
+        button.id='option'+(i+1).toString();
         button.className = "option";
         button.value = options[i];
         button.type="radio";
         button.name="modelOption";
         button.onclick = setOption;
-        button.onmouseover = highlightSensors;
-        button.onmouseleave = unstyleSensors;
+        //button.onmouseover = highlightSensors;
+        //button.onmouseleave = unstyleSensors;
 
         //assign first element as checked
         if(i==0){
@@ -324,84 +330,139 @@ function addModelOptions(tabName){
         modelOptions.appendChild(button);
 
         //make label
+        var option_label_text = ["All Sensors", "Sparse", "NE Quadrant", "SW Quadrant", "DAQ Only"];
         var label = document.createElement('label');
         label.for=options[i];
-        label.innerHTML=options[i];
+        label.innerHTML=option_label_text[i];
         modelOptions.appendChild(label)
     } // end for i
 }
-function highlightSensors(){
-
-    var option=this.id;
-    var sensorlist = getSensorList(option);
-
-    for(key in sensorlist){
-        var sensorID = sensorlist[key];
-        //console.log("change: ", sensorlist[key]);
-        var sensor = document.getElementById(sensorID);
-        sensor.style.fill="#0FF";
-    }//end for key
-
-}
-function unstyleSensors(){
-
-    var option=this.id;
-    var sensorlist = getSensorList(option);
-
-    for(key in sensorlist){
-        var sensorID = sensorlist[key];
-        var fillColor = getFillColor(sensorID);
-        var sensor = document.getElementById(sensorID);
-        sensor.style.fill=fillColor;
-    } // end for key
-    //todo: remove style
-}
+// function highlightSensors(){
+//
+//     var option=this.id;
+//     var sensorlist = getSensorList(option);
+//
+//     for(key in sensorlist){
+//         var sensorID = sensorlist[key];
+//         //console.log("change: ", sensorlist[key]);
+//         var sensor = document.getElementById(sensorID);
+//         sensor.style.fill="#0FF";
+//     }//end for key
+//
+// }
+// function unstyleSensors(){
+//
+//     var option=this.id;
+//     var sensorlist = getSensorList(option);
+//
+//     for(key in sensorlist){
+//         var sensorID = sensorlist[key];
+//         var fillColor = getFillColor(sensorID);
+//         var sensor = document.getElementById(sensorID);
+//         sensor.style.fill=fillColor;
+//     } // end for key
+//     //todo: remove style
+// }
 function getFillColor(ID){
 
     var stringLength = ID.length;
 
-    if(stringLength==5){
+    if(stringLength<=5){
         return purpleAirMarker.fillColor;
-    }else if(stringLength==3){
+    }else if(ID=="Hawthorne" || ID=="Rose Park"){
         return daqMarker.fillColor;
     }else{
         return airUMarker.fillColor;
     }
 }
-function getSensorList(option){
-    var sensorList = [];
-
-    //todo: make arrays for sensor IDs in each option
-    switch(option){
-        case 'option1':
-            sensorList = ["6062'"];
-            break;
-        case 'option2':
-            sensorList = ["7754'"];
-            break;
-        case 'option3':
-            sensorList = ["1719'"];
-            break;
-        case 'option4':
-            sensorList = ["7207'"];
-            break;
-        default:
-            sensorList = ["d1","d2","d3"];
-            break;
-    } //end switch option
-
-    return sensorList;
-}
+// function getSensorList(option){
+//     var sensorList = [];
+//
+//     //todo: make arrays for sensor IDs in each option
+//     switch(option){
+//         case 'option1':
+//             sensorList = ["6062'"];
+//             break;
+//         case 'option2':
+//             sensorList = ["7754'"];
+//             break;
+//         case 'option3':
+//             sensorList = ["1719'"];
+//             break;
+//         case 'option4':
+//             sensorList = ["7207'"];
+//             break;
+//         default:
+//             sensorList = ["d1","d2","d3"];
+//             break;
+//     } //end switch option
+//
+//     return sensorList;
+// }
 function addMinutes(date, minutes) {
 
     //this returns a string only -- add "new Date (...) to return datetime object
     return new Date(date.getTime() + minutes*60000);
 }
-function setOption(){
-    //this.classList.toggle("active");
-    console.log(this.value);
-    condition = this.value;
+function styleMonitors(monitors){
 
+    for(i=0;i<monitors.length;i++){
+
+        var id = sensorList_json[i].id;
+        var selected = monitors[i]["selected\r"];
+
+        var sensor = document.getElementById(id);
+
+        console.log("mon ID: " +id + "Select:" + selected );
+
+        if(selected){
+            sensor.style.fill=getFillColor(id);
+            sensor.style.opacity = 1;
+            sensor.style.zIndex=1000;
+        }else{
+            sensor.style.opacity = 0.15;
+            sensor.style.fill="#eeeeee";
+            sensor.style.zIndex=0;
+        }
+    }// end for i
+
+}
+function setOption(){
+
+    resetPlayer();
+    mapDisplay.removeLayer(overlay);
+    //slider.value=SLIDER_MIN;
+    option = this.value;
+    // Load option file
+    var selected_monitors = loadOptionFile(option);
+
+    //style monitors
+    styleMonitors(selected_monitors);
+
+    console.log("tab:",activeTab);
+    console.log("option: ", option);
+}
+function loadOptionFile(option){
+    var filename = "data/selections/"+option+".csv";
+    //load file
+    var rawText= readTextFile(filename);
+    var conditions = csvJSON(rawText);
+
+
+    //convert text "TRUE/FALSE" to boolean
+    conditions.forEach(function(sensor){
+
+        var selection = sensor["selected\r"];
+
+        if(selection =="TRUE\r" || selection =="TRUE"){
+            sensor["selected\r"] = true;
+        }else{
+            sensor["selected\r"] = false;
+        } // end if else
+
+    })
+
+    return conditions;
 }
 function addPlayerControls(){
 
@@ -475,10 +536,16 @@ function resetPlayer(){
     //console.log("Clicked 'RESET'");
 
     IS_PLAYING = false;
-
     var slider = document.getElementById("slider");
-    slider.value=SLIDER_MIN;
-    timestamp.innerHTML= "Start";
+
+    //Reset slider to beginning
+    slider.value=0;
+
+    //Reset timestamp to beginning
+    timestamp.innerHTML= getStartTime(activeTab);
+
+    //remove overlay
+    mapDisplay.removeLayer(overlay);
 }
 
 async function advanceSlider(){
@@ -518,16 +585,16 @@ function getStartTime(tab){
     var time = new Date(2001,0,0);
     switch(tab){
         case 'fireworks':
-            time = new Date(2018,1,1);
+            time = new Date(2018,6,4);
             break;
         case 'wildfire':
-            time = new Date(2018,4,1);
+            time = new Date(2018,8,21);
             break;
         case 'inversion':
-            time = new Date(2018,2,1);
+            time = new Date(2017,11,17);
             break;
         case 'duststorm':
-            time = new Date(2018,3,1);
+            time = new Date(2018,8,28);
             break;
         default:
             time=new Date(1984,7,28)
@@ -717,6 +784,8 @@ function togglePlay(){
 }
 function getSimulationExtent(tab){
 
+
+    //todo: get file numbers per simulation run
     var max = SLIDER_MIN; // number of simulation steps
 
     switch(tab){
