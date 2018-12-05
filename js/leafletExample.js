@@ -10,7 +10,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 }
 
 // Constant Variables
-var FRAME_RATE = 4;
+var FRAME_RATE = 10;
 var REFRESH = 1000/FRAME_RATE;
 var IS_PLAYING = false;
 var SLIDER_MIN = 3;
@@ -556,19 +556,16 @@ async function advanceSlider(){
     for(i = sliderStart; i<=endVal; i++){
         //var t0 = performance.now();
 
-
-
-
         if(IS_PLAYING){
 
             loadIMG(i,activeTab,option);
-
 
             updateTimestamp(i);
 
             slider.value = i;
 
             await sleep(REFRESH);
+            //setDelay();
         } else{
             break;
         } //end if/else IS_PLAYING
@@ -577,6 +574,12 @@ async function advanceSlider(){
     }// end for i
 
 }// end function advance Slider
+function setDelay(){
+    setTimeout(function(){
+        //nothing
+        console.log("waiting");
+    },REFRESH);
+}//end setDelay
 function updateTimestamp(step){
     var timestamp = document.getElementById("timestamp");
 
@@ -764,10 +767,22 @@ function getStartTime(tab){
 //==== Contours as PNGs
 function loadIMG(stepNumber,tab,option){
 
+
+
+
     var new_imgSuffix = pad(stepNumber,4);
     var new_filename = "img_contours/" + tab + "/" + option +"/image" + new_imgSuffix + ".png";
 
-    overlay.setUrl(new_filename).addTo(mapDisplay);
+
+    fetch(new_filename).then(function(response) {
+        return response.blob();
+    }).then(function(blob) {
+        // Convert the blob to an object URL — this is basically an temporary internal URL
+        // that points to an object stored inside the browser
+        var objectURL = URL.createObjectURL(blob);
+        // invoke showProduct
+        overlay.setUrl(objectURL).addTo(mapDisplay);
+    });
 
 }// end loadIMG;
 
