@@ -557,7 +557,7 @@ async function advanceSlider(){
 
         if(IS_PLAYING){
 
-            loadIMG(i);
+            loadIMG(i,activeTab,option);
             updateTimestamp(i);
 
             slider.value = i;
@@ -756,10 +756,10 @@ function getStartTime(tab){
 // }//end function readJSON
 
 //==== Contours as PNGs
-function loadIMG(stepNumber){
+function loadIMG(stepNumber,tab,option){
 
     var new_imgSuffix = pad(stepNumber,4);
-    var new_filename = "img_contours/" + activeTab + "/image" + new_imgSuffix + ".png";
+    var new_filename = "img_contours/" + tab + "/" + option +"/image" + new_imgSuffix + ".png";
 
     overlay.setUrl(new_filename).addTo(mapDisplay);
 
