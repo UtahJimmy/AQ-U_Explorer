@@ -412,7 +412,7 @@ function styleMonitors(monitors){
 
         var sensor = document.getElementById(id);
 
-        console.log("mon ID: " +id + "Select:" + selected );
+        // console.log("mon ID: " +id + "Select:" + selected );
 
         if(selected){
             sensor.style.fill=getFillColor(id);
@@ -438,8 +438,8 @@ function setOption(){
     //style monitors
     styleMonitors(selected_monitors);
 
-    console.log("tab:",activeTab);
-    console.log("option: ", option);
+    // console.log("tab:",activeTab);
+    // console.log("option: ", option);
 }
 function loadOptionFile(option){
     var filename = "data/selections/"+option+".csv";
@@ -611,7 +611,7 @@ function getStartTime(tab){
 //
 //         for (var key in contour) {
 //             if (contour.hasOwnProperty(key)) {
-//                 // console.log(key, allContours[key]);
+//
 //                 var theContour = contour[key];
 //                 var aContour = theContour.path;
 //                 aContour.level = theContour.level;
@@ -690,14 +690,14 @@ function getStartTime(tab){
 //         contourPath.exit().remove();
 //
 //         function resetView() {
-//             //console.log('reset:', mapDisplay.options.center);
+//
 //             contourEnter.attr("d", function (d) {
 //                 var pathStr = d.map(function (d1) {
 //                     var point = mapDisplay.latLngToLayerPoint(new L.LatLng(d1[2], d1[1]));
 //                     return d1[0] + point.x + "," + point.y;
 //                 }).join('');
 //
-//                 //console.log('d', d);
+//
 //
 //                 return pathStr;
 //             });
@@ -710,7 +710,6 @@ function getStartTime(tab){
 //
 // }//end function set contour
 // function updateContour(tab,condition) {
-//    // console.log('updating the contours');
 //
 //     //todo: choose  the contour set based on active tab and condition
 //
