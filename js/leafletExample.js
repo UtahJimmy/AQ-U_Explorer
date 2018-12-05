@@ -554,10 +554,16 @@ async function advanceSlider(){
     var endVal = parseInt(slider.max);
 
     for(i = sliderStart; i<=endVal; i++){
+        var t0 = performance.now();
+
+
+
 
         if(IS_PLAYING){
 
             loadIMG(i,activeTab,option);
+            var t1 = performance.now();
+            console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
             updateTimestamp(i);
 
             slider.value = i;
