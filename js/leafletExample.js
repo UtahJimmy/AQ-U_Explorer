@@ -554,7 +554,7 @@ async function advanceSlider(){
     var endVal = parseInt(slider.max);
 
     for(i = sliderStart; i<=endVal; i++){
-        var t0 = performance.now();
+        //var t0 = performance.now();
 
 
 
@@ -572,8 +572,8 @@ async function advanceSlider(){
         } else{
             break;
         } //end if/else IS_PLAYING
-        var t1 = performance.now();
-        console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+        //var t1 = performance.now();
+        //console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
     }// end for i
 
 }// end function advance Slider
