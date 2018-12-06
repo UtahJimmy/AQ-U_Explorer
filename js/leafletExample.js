@@ -10,7 +10,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 }
 
 // Constant Variables
-var FRAME_RATE = 10;
+var FRAME_RATE = 6;
 var REFRESH = 1000/FRAME_RATE;
 var IS_PLAYING = false;
 var SLIDER_MIN = 3;
