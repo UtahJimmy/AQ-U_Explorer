@@ -242,6 +242,8 @@ function paintMap(map){
 }
 function openTab(evt, tabName) {
 
+    //in case player is playing, stop it.
+    resetPlayer();
     var tablinks = document.getElementsByClassName("tab");
 
 
@@ -541,13 +543,15 @@ function addPlayerControls(){
 }
 
 function resetPlayer(){
-    //console.log("Clicked 'RESET'");
 
     IS_PLAYING = false;
+
+
     var slider = document.getElementById("slider");
 
     //Reset slider to beginning
     slider.value=0;
+    STEP = 3;
 
     //Reset timestamp to beginning
     timestamp.innerHTML= getStartTime(activeTab);
