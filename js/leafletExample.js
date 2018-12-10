@@ -324,7 +324,7 @@ function addModelOptions(tabName){
         //button.onmouseover = highlightSensors;
         //button.onmouseleave = unstyleSensors;
 
-        //assign first element as checked
+        //Manually assign first option as default
         if(i==0){
             button.checked="checked";
         }
@@ -430,7 +430,15 @@ function styleMonitors(monitors){
 }
 function setOption(){
 
-    resetPlayer();
+    //We don't want to reset the player between choices,
+    // but we do want the player to continue playing
+
+    // // resetPlayer();
+    // if(IS_PLAYING){
+    //     advanceSlider();
+    // }
+
+
     //mapDisplay.removeLayer(overlay);
     //slider.value=SLIDER_MIN;
     option = this.value;
@@ -444,6 +452,7 @@ function setOption(){
     // console.log("option: ", option);
 }
 function loadOptionFile(option){
+
     var filename = "data/selections/"+option+".csv";
     //load file
     var rawText= readTextFile(filename);
@@ -465,6 +474,7 @@ function loadOptionFile(option){
 
     return conditions;
 }
+
 function addPlayerControls(){
 
 
@@ -482,12 +492,14 @@ function addPlayerControls(){
     input.type="range";
     input.step='1';
     input.value="0";
+    input.oninput=
     playerContainer.appendChild(input);
 
 
     document.querySelector('input').addEventListener('input',(evt)=>{
         STEP = evt.target.value;
         updateTimestamp(STEP);
+        loadIMG(STEP, activeTab,option);
 
         console.log('changed',STEP);
     })
@@ -546,7 +558,6 @@ function resetPlayer(){
 
     IS_PLAYING = false;
 
-
     var slider = document.getElementById("slider");
 
     //Reset slider to beginning
@@ -601,19 +612,15 @@ async function advanceSlider(){
             await sleep(REFRESH);
             //setDelay();
         } else{
-            break;
+
+           break;
         } //end if/else IS_PLAYING
         //var t1 = performance.now();
         //console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
     }// end for i
 
 }// end function advance Slider
-function setDelay(){
-    setTimeout(function(){
-        //nothing
-        console.log("waiting");
-    },REFRESH);
-}//end setDelay
+
 function updateTimestamp(step){
     var timestamp = document.getElementById("timestamp");
 
@@ -804,9 +811,7 @@ function loadIMG(stepNumber,tab,option){
     var new_imgSuffix = pad(stepNumber,4);
     var new_filename = "img_contours/" + tab + "/" + option +"/image" + new_imgSuffix + ".png";
 
-
     //overlay.setUrl(new_filename).addTo(mapDisplay);
-
 
     // **** Alex's Link
     //https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data#A_more_complex_example
@@ -844,7 +849,6 @@ function togglePlay(){
     }
 }
 function getSimulationExtent(tab){
-
 
     //todo: get file numbers per simulation run
     var max = SLIDER_MIN; // number of simulation steps
