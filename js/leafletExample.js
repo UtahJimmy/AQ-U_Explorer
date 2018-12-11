@@ -328,7 +328,7 @@ function getSimulationOptions(tab){
             opts = ["option1", "option2", "option3", "option4", "option5"];
             break;
         case "inversion":
-            opts = ["option1", "option2", "option3", "option4", "option5"];
+            opts = ["option1", "option2", "option3", "option4"];
             break;
         default:
             opts=['def1','def2'];
@@ -586,9 +586,35 @@ function updateTimestamp(step){
 
     var startTime = getStartTime(activeTab);
 
-    var newTime = addMinutes(startTime, step*10);
+    var stepIncrement = getStepIncrement(activeTab);
+    var newTime = addMinutes(startTime, step*stepIncrement);
 
     timestamp.innerHTML = newTime;
+}
+function getStepIncrement(activeTab){
+
+    //controls how many minutes the timestep advances per step
+    var minutesToIncrement = 10;
+
+    switch(activeTab){
+        case "fireworks":
+            minutesToIncrement = 10;
+            break;
+        case "wildfire":
+            minutesToIncrement = 10;
+            break;
+        case "inversion":
+            minutesToIncrement = 60;
+            break;
+        case "duststorm":
+            minutesToIncrement = 10;
+            break;
+        default:
+            minutesToIncrement = 10;
+            break;
+    }
+
+    return minutesToIncrement;
 }
 function getStartTime(tab){
     var time = new Date(2001,0,0);
@@ -600,7 +626,7 @@ function getStartTime(tab){
             time = new Date(2018,6,5,19,0,0,0);
             break;
         case 'inversion':
-            time = new Date(2017,11,17);
+            time = new Date(2017,11,28);
             break;
         case 'duststorm':
             time = new Date(2018,8,28);
@@ -670,7 +696,7 @@ function getSimulationExtent(tab){
             max = SLIDER_MIN;
             break;
         case "inversion":
-            max=SLIDER_MIN;
+            max=74;
             break;
         default:
             max = SLIDER_MIN;
