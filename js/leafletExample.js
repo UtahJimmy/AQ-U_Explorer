@@ -225,9 +225,19 @@ function paintMap(map){
         accessToken:'pk.eyJ1IjoiamFtb29yZTg0IiwiYSI6ImNqbm0zeWo5ZTAwcDIzcXM4NjJ4czBuODUifQ.cJSLiKVi7lbGzE4RQTRNHA'
     }).addTo(map);
 }
+function removeAllSensors(){
+    var svg = document.getElementsByTagName('svg')[0];
+    var group = svg.getElementsByTagName('g')[0];
+    var paths = group.getElementsByTagName('path');
+    //console.log("total paths on Screeen:",paths);
+    paths.remove();
+}
 function openTab(evt, tabName) {
 
     resetPlayer();
+
+    //REmove all sensors on the tab
+    removeAllSensors();
 
     activeTab = tabName;
 
@@ -247,6 +257,9 @@ function openTab(evt, tabName) {
     //activate current tab
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " is-active";
+
+    // Look up what sensors should be on the map
+    loadSensorPositions(activeTab);
 
     console.log(option);
     console.log(activeTab);
@@ -435,7 +448,7 @@ function setOption(){
 }
 function loadOptionFile(option){
 
-    var filename = "data/selections/"+option+".csv";
+    var filename = "data/selections/" + activeTab + "/" +option+ ".csv";
     //load file
     var rawText= readTextFile(filename);
     var conditions = csvJSON(rawText);
