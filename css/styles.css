@@ -79,3 +79,11 @@
 .selected {
     stroke: #fffbf9;
 }
+
+#mapContainer{
+    display: flex;
+    flex-direction: row;
+}
+.colorBar{
+    width:300px;
+}

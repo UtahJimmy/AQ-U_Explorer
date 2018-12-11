@@ -23,7 +23,7 @@ var STEP = 3;
 /////////////////////////////////////
 
 //Map Options
-var activeTab = "";
+var activeTab = SPLASHPAGE;
 var startZoom = 11;
 var maxZoom = startZoom;
 var minZoom = startZoom;
@@ -36,8 +36,6 @@ var mapSettings = {
     tap:false,
     center: [40.700,-111.870]
 };
-
-
 
 //Simulation Overlay Options
 var imgOverlayOptions ={
@@ -84,36 +82,41 @@ var start_filename = "img_contours/" + activeTab + "/image0003.png";
 
 //load new one
 var overlay = L.imageOverlay(start_filename,imgBounds,imgOverlayOptions);
+
+//load sensor list
+// var sensor_list_fp = "data/sensor_list.csv";
+// var sensorList = readTextFile(sensor_list_fp);
+// var sensorList_json = csvJSON(sensorList);
+
 /////////////////////////////////////
 //
 //            STATEMENTS
 //
 /////////////////////////////////////
 
+addMapContainer();
 
-//Make map container
-var container = document.getElementById('wrapper');
-container.innerHTML = "<div id='map'></div>";
+//ADD COLORBAR HERE TO PLACE IT LEFT OF MAP
+
+// Add a map div to mapContainer
+var mapCont = document.getElementById('mapContainer');
+var map = document.createElement('div');
+map.id='map';
+mapCont.appendChild(map);
+
+// ADD COLOR BAR HERE TO PLACE IT RIGHT OF MAP
+addColorBar();
+
 var mapDisplay = L.map('map',mapSettings).setView(slcLocation,startZoom);
-
-
-//load sensor list
-var sensor_list_fp = "data/sensor_list.csv";
-var sensorList = readTextFile(sensor_list_fp);
-var sensorList_json = csvJSON(sensorList);
-
-
-//Load sensor positions
 var id = document.getElementsByClassName('is-active')[0].id;
-loadSensorPositions(id);
 
+loadSensorPositions(activeTab);
 
-//fill tab
 paintMap(mapDisplay);
 addPlayerControls();
-addModelOptions(SPLASHPAGE);
-timestamp.innerHTML= getStartTime(activeTab);
+addModelOptions(activeTab);
 
+timestamp.innerHTML= getStartTime(activeTab);
 
 //style monitors
 var selected_monitors = loadOptionFile(option);
@@ -155,7 +158,6 @@ function loadSensorPositions(id){
         markerList[id].bindPopup("<b>monitor: </b>" + id);
         markerList[id]._path.id = id;
         markerList[id].on("mouseover",mouseOverEvent);
-        //markerList[id].on("click", clickEvent);
         markerList[id].on('mouseout',mouseOutEvent);
 
     });
@@ -199,19 +201,6 @@ function mouseOverEvent(e){
     //var markerID = e.sourceTarget._path.id;
     this.openPopup();
 }
-function clickEvent(e){
-
-    var markerID = e.sourceTarget._path.id;
-    var dot = document.getElementById(markerID);
-
-    // toggle dot marker styling
-    if (dot.classList.contains('selected')){
-        dot.classList.remove('selected');
-    } else{
-        dot.classList.add('selected');
-    }// end if-else dot
-
-}
 function mouseOutEvent(e){
 
     //var markerID = e.sourceTarget._path.id;
@@ -222,10 +211,6 @@ function mouseOutEvent(e){
 //==== Tab content Functions
 function addMap(id){
 
-    var x = document.getElementById('wrapper');
-        x.innerHTML = "<div id='map'></div>";
-
-    mapDisplay = L.map('map',mapSettings).setView(slcLocation,startZoom);
     paintMap(mapDisplay);
     loadSensorPositions(id);
 
@@ -242,17 +227,17 @@ function paintMap(map){
 }
 function openTab(evt, tabName) {
 
-    //in case player is playing, stop it.
     resetPlayer();
-    var tablinks = document.getElementsByClassName("tab");
 
+    activeTab = tabName;
+
+    var tablinks = document.getElementsByClassName("tab");
 
     if(tabName=='duststorm' & evt.altKey == true & evt.shiftKey==true){
 
         var audio = new Audio('images/duststorm/op1/SA.mp3');
         audio.play();
     }
-
 
     //de-activate old tab
     for (i = 0; i < 4; i++) {
@@ -263,12 +248,64 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " is-active";
 
-    addMap(tabName);
+    console.log(option);
+    console.log(activeTab);
+
+    option="option1";
+    //addMapContainer();
+    //addColorBar();
+
+    mapDisplay.removeLayer(overlay);
+
+    var monitors = loadOptionFile(option);
+    styleMonitors(monitors);
+    //paintMap(mapDisplay);
+    //addPlayerControls();
+
+    //remove and reload player controls
+    document.getElementById('playerContainer').remove();
+    //document.getElementById('timestamp');
     addPlayerControls();
+
+    // Update the slider with the current max value
+    var slider = document.getElementById('slider');
+    var extents = getSimulationExtent(activeTab);
+    slider.max=extents[1];
+
+    //remove and reload model options data
+    document.getElementById('modelOptions').remove();
     addModelOptions(tabName);
+
     timestamp.innerHTML= getStartTime(activeTab);
 
 }// end openTab
+function addMapContainer(){
+    var wrapper = document.getElementById('wrapper');
+    var mapContainer = document.createElement('div');
+    mapContainer.id='mapContainer';
+    wrapper.appendChild(mapContainer);
+}//end addMapContainer;
+function addColorBar(){
+
+    // select mapContainer
+    var mapContainer = document.getElementById('mapContainer');
+
+    //Add Color Bar Div
+    var colorBar = document.createElement('div');
+    colorBar.id = 'colorBar';
+    mapContainer.appendChild(colorBar);
+
+    //create image element
+    var barImg = new Image(450,100);
+    barImg.src = "images/colorbar.png";
+    barImg.className="colorBar";
+    barImg.width="30px";
+
+    //add image to colorbar Div
+    var colorBarDiv = document.getElementById('colorBar');
+    colorBarDiv.appendChild(barImg);
+
+}// end addColorBar()
 function getSimulationOptions(tab){
 
     // // // //
@@ -278,39 +315,38 @@ function getSimulationOptions(tab){
     //
     // // // //
 
-    var opts = ["option1", "option2", "option3", "option4", "option5"];
+    var opts = [];
 
     switch(tab){
         case "wildfire":
-            //opts = ["w1","w2","w3"];
+            opts = ["option1", "option2", "option3", "option4"];
             break;
         case "fireworks":
-            //opts = ["f1","f2","f3","f4","f5"];
+            opts = ["option1", "option2", "option3", "option4"];
             break;
         case "duststorm":
-            //opts = ["d1","d2"];
+            opts = ["option1", "option2", "option3", "option4", "option5"];
             break;
         case "inversion":
-            //opts = ["i1","i2","i3"];
+            opts = ["option1", "option2", "option3", "option4", "option5"];
             break;
         default:
-            //opts=['def1','def2'];
+            opts=['def1','def2'];
             break;
     }//end switch(tab)
 
     return opts;
 }
+
 function addModelOptions(tabName){
 
-
-    //create model options HTML element
+    // //create model options HTML element
     var modelOptions = document.createElement('div');
     modelOptions.id = "modelOptions";
-    container.appendChild(modelOptions);
+    wrapper.appendChild(modelOptions);
 
     //get option types
     var options = getSimulationOptions(tabName);
-
 
     //add options types to tab
     for(i=0;i<options.length;i++){
@@ -321,8 +357,6 @@ function addModelOptions(tabName){
         button.type="radio";
         button.name="modelOption";
         button.onclick = setOption;
-        //button.onmouseover = highlightSensors;
-        //button.onmouseleave = unstyleSensors;
 
         //Manually assign first option as default
         if(i==0){
@@ -339,32 +373,6 @@ function addModelOptions(tabName){
         modelOptions.appendChild(label)
     } // end for i
 }
-// function highlightSensors(){
-//
-//     var option=this.id;
-//     var sensorlist = getSensorList(option);
-//
-//     for(key in sensorlist){
-//         var sensorID = sensorlist[key];
-//         //console.log("change: ", sensorlist[key]);
-//         var sensor = document.getElementById(sensorID);
-//         sensor.style.fill="#0FF";
-//     }//end for key
-//
-// }
-// function unstyleSensors(){
-//
-//     var option=this.id;
-//     var sensorlist = getSensorList(option);
-//
-//     for(key in sensorlist){
-//         var sensorID = sensorlist[key];
-//         var fillColor = getFillColor(sensorID);
-//         var sensor = document.getElementById(sensorID);
-//         sensor.style.fill=fillColor;
-//     } // end for key
-//     //todo: remove style
-// }
 function getFillColor(ID){
 
     var stringLength = ID.length;
@@ -377,29 +385,6 @@ function getFillColor(ID){
         return airUMarker.fillColor;
     }
 }
-// function getSensorList(option){
-//     var sensorList = [];
-//
-//     switch(option){
-//         case 'option1':
-//             sensorList = ["6062'"];
-//             break;
-//         case 'option2':
-//             sensorList = ["7754'"];
-//             break;
-//         case 'option3':
-//             sensorList = ["1719'"];
-//             break;
-//         case 'option4':
-//             sensorList = ["7207'"];
-//             break;
-//         default:
-//             sensorList = ["d1","d2","d3"];
-//             break;
-//     } //end switch option
-//
-//     return sensorList;
-// }
 function addMinutes(date, minutes) {
 
     //this returns a string only -- add "new Date (...) to return datetime object
@@ -407,9 +392,13 @@ function addMinutes(date, minutes) {
 }
 function styleMonitors(monitors){
 
+    var sensorFilePath = "data/" + activeTab +"Sensors.csv";
+    var sensorPositions  = readTextFile(sensorFilePath);
+    var sensorList_json =  csvJSON(sensorPositions);
+
     for(i=0;i<monitors.length;i++){
 
-        var id = sensorList_json[i].id;
+        var id = sensorList_json[i].ID;
         var selected = monitors[i]["selected\r"];
 
         var sensor = document.getElementById(id);
@@ -430,26 +419,19 @@ function styleMonitors(monitors){
 }
 function setOption(){
 
-    //We don't want to reset the player between choices,
-    // but we do want the player to continue playing
-
-    // // resetPlayer();
-    // if(IS_PLAYING){
-    //     advanceSlider();
-    // }
-
-
-    //mapDisplay.removeLayer(overlay);
-    //slider.value=SLIDER_MIN;
     option = this.value;
+
     // Load option file
     var selected_monitors = loadOptionFile(option);
 
     //style monitors
     styleMonitors(selected_monitors);
 
-    // console.log("tab:",activeTab);
-    // console.log("option: ", option);
+    //Update image if player is paused
+    if(!IS_PLAYING){
+        loadIMG(STEP,activeTab,option);
+    }//end if not playing
+
 }
 function loadOptionFile(option){
 
@@ -470,20 +452,22 @@ function loadOptionFile(option){
             sensor["selected\r"] = false;
         } // end if else
 
-    })
+    });
 
     return conditions;
 }
 
 function addPlayerControls(){
 
-
     activeTab = document.getElementsByClassName("is-active")[0].id;
 
-    var playerContainer = document.createElement('div');
-    playerContainer.id = 'playerContainer';
+    var playerCont = document.createElement('div');
+    playerCont.id = 'playerContainer';
 
-    container.appendChild(playerContainer);
+    var tabWrapper = document.getElementById('wrapper');
+    tabWrapper.appendChild(playerCont);
+
+    var playerContainer = document.getElementById('playerContainer');
 
     //add HTML slider
     var input = document.createElement('input');
@@ -492,19 +476,20 @@ function addPlayerControls(){
     input.type="range";
     input.step='1';
     input.value="0";
-    input.oninput=
+
     playerContainer.appendChild(input);
 
-
-    document.querySelector('input').addEventListener('input',(evt)=>{
+    //add code to detect dynamic click events
+    var inpt = document.getElementById('slider');
+    inpt.addEventListener('input',(evt)=>{
         STEP = evt.target.value;
+        console.log("you clicked:", STEP);
         updateTimestamp(STEP);
         loadIMG(STEP, activeTab,option);
 
         console.log('changed',STEP);
-    })
+    });
     //input.onChange = sliderTest;
-
 
     //Add Button container
     var btnContainer = document.createElement('div');
@@ -542,18 +527,15 @@ function addPlayerControls(){
 
     resetBtn.addEventListener("click",function(){
         resetPlayer();
-        //console.log("reset");
-        //loadIMG(SLIDER_MIN); --> //todo: remove this for showing first frame on reset
     });
 
     //Add readout text
-    //todo: convert frame number to timestamp
+    //var playerContainer = document.getElementById('playerContainer');
     var timestamp = document.createElement("div");
     timestamp.id="timestamp";
-    container.appendChild(timestamp);
+    playerContainer.appendChild(timestamp);
 
 }
-
 function resetPlayer(){
 
     IS_PLAYING = false;
@@ -570,33 +552,11 @@ function resetPlayer(){
     mapDisplay.removeLayer(overlay);
 
 }
-
 async function advanceSlider(){
 
     var slider = document.getElementById("slider");
     var sliderStart = parseInt(slider.value);
     var endVal = parseInt(slider.max);
-
-    // for(i = STEP; i<=endVal; i++){
-    //     //var t0 = performance.now();
-    //
-    //     if(IS_PLAYING){
-    //
-    //         loadIMG(i,activeTab,option);
-    //
-    //         updateTimestamp(i);
-    //
-    //         slider.value = i;
-    //
-    //         await sleep(REFRESH);
-    //         //setDelay();
-    //     } else{
-    //         break;
-    //     } //end if/else IS_PLAYING
-    //     //var t1 = performance.now();
-    //     //console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
-    // }// end for i
-
 
     for(STEP; STEP<=endVal; STEP++){
         //var t0 = performance.now();
@@ -620,25 +580,24 @@ async function advanceSlider(){
     }// end for i
 
 }// end function advance Slider
-
 function updateTimestamp(step){
+
     var timestamp = document.getElementById("timestamp");
 
     var startTime = getStartTime(activeTab);
 
     var newTime = addMinutes(startTime, step*10);
 
-
-    timestamp.innerHTML = newTime;//.substring(0,27) ;
+    timestamp.innerHTML = newTime;
 }
 function getStartTime(tab){
     var time = new Date(2001,0,0);
     switch(tab){
         case 'fireworks':
-            time = new Date(2018,6,4);
+            time = new Date(2018,6,4,17,0,0,0);
             break;
         case 'wildfire':
-            time = new Date(2018,8,21);
+            time = new Date(2018,6,5,19,0,0,0);
             break;
         case 'inversion':
             time = new Date(2017,11,17);
@@ -652,158 +611,6 @@ function getStartTime(tab){
 
     return time;
 }
-//==== Contours as Path elements
-// function setContour(theMap, simulationRun,step) {
-//
-//         let k = 0;
-//         let contour = simulationRun[step];
-//
-//         var contours = [];
-//
-//         for (var key in contour) {
-//             if (contour.hasOwnProperty(key)) {
-//
-//                 var theContour = contour[key];
-//                 var aContour = theContour.path;
-//                 aContour.level = theContour.level;
-//                 aContour.k = theContour.k;
-//
-//                 contours.push(aContour);
-//             }// end if
-//         }//end for
-//
-//         contours.sort(function (a, b) {
-//             return b.level - a.level;
-//         });
-//
-//         // var levelColours = ['#a6d96a', '#ffffbf', '#fdae61', '#d7191c', '#bd0026', '#a63603'];
-//         var levelColours = ['#31a354', '#a1d99b', '#e5f5e0', '#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026'];
-//         var defaultContourColor = 'black';
-//         var defaultContourWidth = 1;
-//
-//         var mapSVG = d3.select("#map").select("svg.leaflet-zoom-animated");
-//         var g = mapSVG.select("g");  //.attr("class", "leaflet-zoom-hide").attr('opacity', 0.8);
-//
-//         // var contourPath = g.selectAll("path")
-//         //         .data(contours)
-//         //       .enter().append("path")
-//         //       .style("fill", function(d, i) { return levelColours[d.level];})
-//         //       .style("stroke", defaultContourColor)
-//         //       .style('stroke-width', defaultContourWidth)
-//         //       .style('opacity', 1)
-//         //       .on('mouseover', function(d) {
-//         //           d3.select(this).style('stroke', 'black');
-//         //       })
-//         //       .on('mouseout', function(d) {
-//         //           d3.select(this).style('stroke', defaultContourColor);
-//         //       });
-//
-//         var contourPath = g.selectAll("path")
-//             .data(contours, function (d) {
-//                 return d;
-//             });
-//
-//         contourPath.style("fill", function (d, i) {
-//             return levelColours[d.level];
-//         })
-//         // .style("stroke", defaultContourColor)
-//         // .style('stroke-width', defaultContourWidth)
-//             .style('opacity', 1)
-//             .on('mouseover', function (d) {
-//                 d3.select(this).style('stroke', 'black');
-//             })
-//             .on('mouseout', function (d) {
-//                 d3.select(this).style('stroke', defaultContourColor);
-//             });
-//
-//         var contourEnter = contourPath.enter().append("path")
-//         // .merge(contourPath)
-//         //   .attr("d", function(d) {
-//         //     var pathStr = d.map(function(d1) {
-//         //       var point = theMap.latLngToLayerPoint(new L.LatLng(d1[1], d1[2]));
-//         //       return d1[0] + point.x + "," + point.y;
-//         //     }).join('');
-//         //     return pathStr;
-//         //   })
-//             .style("fill", function (d, i) {
-//                 return levelColours[d.level];
-//             })
-//             // .style("stroke", defaultContourColor)
-//             // .style('stroke-width', defaultContourWidth)
-//             .style('opacity', 0.6)
-//             .on('mouseover', function (d) {
-//                 d3.select(this).style('stroke', 'black');
-//             })
-//             .on('mouseout', function (d) {
-//                 d3.select(this).style('stroke', defaultContourColor);
-//             });
-//
-//         contourPath.exit().remove();
-//
-//         function resetView() {
-//
-//             contourEnter.attr("d", function (d) {
-//                 var pathStr = d.map(function (d1) {
-//                     var point = mapDisplay.latLngToLayerPoint(new L.LatLng(d1[2], d1[1]));
-//                     return d1[0] + point.x + "," + point.y;
-//                 }).join('');
-//
-//
-//
-//                 return pathStr;
-//             });
-//         }//end function reset view
-//
-//         theMap.on("viewreset", resetView);
-//         //theMap.on("zoom", resetView);
-//
-//         resetView();
-//
-// }//end function set contour
-// function updateContour(tab,condition) {
-//
-//     //todo: choose  the contour set based on active tab and condition
-//
-//     loadpaths(tab,condition);
-//     // getDataFromDB(lastContourURL).then(data => {
-//     //
-//     //     console.log(data);
-//     // // process contours data
-//     // setContour(slcMap, data);
-//     //
-//     // }).catch(function(err){
-//     //     // alert("error, request failed!");
-//     //     console.log("Error when updating the contour: ", err)
-//     // });
-// }
-// function loadpaths(folder,option,step){
-//     //console.log("loading paths...");
-//
-//     //addAnimationControls(folder);
-//     readJSON(function(response) {
-//         // Parsing JSON string into object
-//         var actual_JSON = JSON.parse(response);
-//         //console.log("made it through!");
-//         //console.log("Returned Contours: ",actual_JSON);
-//         setContour(mapDisplay, actual_JSON,step);
-//     });
-//
-// }//end loadpaths
-// function readJSON(callback) {
-//
-//     var filepath = "paths/ExampleContour.json";
-//
-//     var xobj = new XMLHttpRequest();
-//     xobj.overrideMimeType("application/json");
-//     xobj.open('GET', filepath, true); // Replace 'appDataServices' with the path to your file
-//     xobj.onreadystatechange = function () {
-//         if (xobj.readyState == 4 && xobj.status == "200") {
-//             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-//             callback(xobj.responseText);
-//         }
-//     };
-//     xobj.send(null);
-// }//end function readJSON
 
 //==== Contours as PNGs
 function loadIMG(stepNumber,tab,option){
@@ -850,24 +657,23 @@ function togglePlay(){
 }
 function getSimulationExtent(tab){
 
-    //todo: get file numbers per simulation run
     var max = SLIDER_MIN; // number of simulation steps
 
     switch(tab){
         case "fireworks":
-            max = 100;
-            break;
-        case "duststorm":
-            max = 431;
+            max = 57;
             break;
         case "wildfire":
-            max = 431;
+            max = 176;
+            break;
+        case "duststorm":
+            max = SLIDER_MIN;
             break;
         case "inversion":
-            max=400;
+            max=SLIDER_MIN;
             break;
         default:
-            max = 10;
+            max = SLIDER_MIN;
     } //end switch tab
     return [SLIDER_MIN, max]
 
