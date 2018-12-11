@@ -700,7 +700,7 @@ function getSimulationExtent(tab){
 
     switch(tab){
         case "fireworks":
-            max = 57;
+            max = 93;
             break;
         case "wildfire":
             max = 176;
