@@ -297,7 +297,7 @@ function addColorBar(){
 
     //create image element
     var barImg = new Image(450,100);
-    barImg.src = "images/colorbar.png";
+    barImg.src = "images/colorbar.jpeg";
     barImg.className="colorBar";
     barImg.width="30px";
 
