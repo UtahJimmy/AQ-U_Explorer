@@ -322,7 +322,7 @@ function getSimulationOptions(tab){
             opts = ["option1", "option2", "option3", "option4"];
             break;
         case "fireworks":
-            opts = ["option1", "option2", "option3", "option4"];
+            opts = ["option1", "option2", "option3", "option4","option5"];
             break;
         case "duststorm":
             opts = ["option1", "option2", "option3", "option4", "option5"];
