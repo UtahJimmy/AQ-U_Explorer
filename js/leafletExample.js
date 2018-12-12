@@ -706,7 +706,7 @@ function getSimulationExtent(tab){
             max = 176;
             break;
         case "duststorm":
-            max = SLIDER_MIN;
+            max = 146;
             break;
         case "inversion":
             max=74;
