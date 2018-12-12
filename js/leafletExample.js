@@ -642,7 +642,7 @@ function getStartTime(tab){
             time = new Date(2017,11,28);
             break;
         case 'duststorm':
-            time = new Date(2018,8,28);
+            time = new Date(2017,9,20);
             break;
         default:
             time=new Date(1984,7,28)
