@@ -116,8 +116,11 @@ paintMap(mapDisplay);
 addPlayerControls();
 addModelOptions(activeTab);
 
-timestamp.innerHTML= getStartTime(activeTab);
+//To show full date, uncomment this line
+//timestamp.innerHTML= getStartTime(activeTab);
 
+//To hide full date and show only time of day uncomment this line
+timestamp.innerHTML= getStartTime(activeTab).toLocaleTimeString();
 //style monitors
 var selected_monitors = loadOptionFile(option);
 styleMonitors(selected_monitors);
@@ -289,7 +292,11 @@ function openTab(evt, tabName) {
     document.getElementById('modelOptions').remove();
     addModelOptions(tabName);
 
-    timestamp.innerHTML= getStartTime(activeTab);
+    //To show full date, uncomment this line
+    //timestamp.innerHTML= getStartTime(activeTab);
+
+    //to hide date and show only time of day, uncomment this line
+    timestamp.innerHTML= getStartTime(activeTab).toLocaleTimeString();
 
 }// end openTab
 function addMapContainer(){
@@ -560,7 +567,12 @@ function resetPlayer(){
     STEP = 3;
 
     //Reset timestamp to beginning
-    timestamp.innerHTML= getStartTime(activeTab);
+    //To show full date, uncomment this line
+    //timestamp.innerHTML= getStartTime(activeTab);
+
+    //To hide full date and show only time of day, uncomment this line
+    timestamp.innerHTML= getStartTime(activeTab).toLocaleTimeString();
+
 
     mapDisplay.removeLayer(overlay);
 
