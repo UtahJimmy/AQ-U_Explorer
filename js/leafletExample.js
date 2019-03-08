@@ -590,8 +590,8 @@ async function advanceSlider(){
 
             loadIMG(STEP,activeTab,option);
 
-            updateTimestamp(STEP);
-
+            //updateTimestamp(STEP);
+            updateAnonTimestamp(STEP);
             slider.value = STEP;
 
             await sleep(REFRESH);
@@ -615,6 +615,18 @@ function updateTimestamp(step){
     var newTime = addMinutes(startTime, step*stepIncrement);
 
     timestamp.innerHTML = newTime;
+}
+
+function updateAnonTimestamp(step){
+
+    // This function is for giveing the times without the date
+
+    var timestamp = document.getElementById("timestamp");
+    var startTime = getStartTime(activeTab);
+    var stepIncrement = getStepIncrement(activeTab);
+    var newTime = addMinutes(startTime, step*stepIncrement);
+    //console.log(newTime);
+    timestamp.innerHTML = newTime.toLocaleTimeString();
 }
 function getStepIncrement(activeTab){
 
