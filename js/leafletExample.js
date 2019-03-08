@@ -504,7 +504,7 @@ function addPlayerControls(){
     inpt.addEventListener('input',(evt)=>{
         STEP = evt.target.value;
         console.log("you clicked:", STEP);
-        updateTimestamp(STEP);
+        updateAnonTimestamp(STEP);
         loadIMG(STEP, activeTab,option);
 
         console.log('changed',STEP);
