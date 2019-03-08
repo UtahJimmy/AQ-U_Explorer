@@ -614,7 +614,7 @@ function updateTimestamp(step){
     var stepIncrement = getStepIncrement(activeTab);
     var newTime = addMinutes(startTime, step*stepIncrement);
 
-    timestamp.innerHTML = newTime;
+    timestamp.innerHTML = newTime.toLocaleTimeString();
 }
 
 function updateAnonTimestamp(step){
