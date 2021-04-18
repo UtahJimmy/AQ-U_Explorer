@@ -273,8 +273,8 @@ function openTab(evt, tabName) {
     // Look up what sensors should be on the map
     loadSensorPositions(activeTab);
 
-    console.log(option);
-    console.log(activeTab);
+    //console.log(option);
+    //console.log(activeTab);
 
     option="option1";
     //addMapContainer();
@@ -512,11 +512,11 @@ function addPlayerControls(){
     var inpt = document.getElementById('slider');
     inpt.addEventListener('input',(evt)=>{
         STEP = evt.target.value;
-        console.log("you clicked:", STEP);
+        //console.log("you clicked:", STEP);
         updateAnonTimestamp(STEP);
         loadIMG(STEP, activeTab,option);
 
-        console.log('changed',STEP);
+        //console.log('changed',STEP);
     });
     //input.onChange = sliderTest;
 
